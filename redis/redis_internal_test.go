@@ -44,7 +44,7 @@ func TestNewRedis(t *testing.T) {
 	c, err := New("redis://test", WithPoolSize(12))
 
 	assert.NoError(t, err)
-	assert.Equal(t, 12, c.client.Options().PoolSize)
+	assert.Equal(t, 12, c.conn.Options().PoolSize)
 }
 
 func TestNewRedis_InvalidUri(t *testing.T) {

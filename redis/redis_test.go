@@ -60,7 +60,7 @@ func TestRedisCache(t *testing.T) {
 	v, err := c.GetMulti("test", "test1", "_")
 	assert.NoError(t, err)
 	assert.Len(t, v, 3)
-	assert.EqualError(t, v[2].Error(), "cache: miss")
+	assert.EqualError(t, v[2].Err, "cache: miss")
 
 	// Delete
 	err = c.Delete("test1")

@@ -33,7 +33,7 @@ func TestNewMemcache(t *testing.T) {
 
 func TestEncoderError(t *testing.T) {
 	c := Memcache{
-		encoder: func(v interface{}) ([]byte, error) {
+		enc: func(v interface{}) ([]byte, error) {
 			return nil, errors.New("test error")
 		},
 	}

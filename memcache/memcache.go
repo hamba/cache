@@ -4,30 +4,12 @@ package memcache
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/hamba/cache/internal/decoder"
 	"github.com/hamba/pkg/cache"
 )
-
-type decoder struct{}
-
-func (d decoder) Bool(v []byte) (bool, error) {
-	return string(v) == "1", nil
-}
-
-func (d decoder) Int64(v []byte) (int64, error) {
-	return strconv.ParseInt(string(v), 10, 64)
-}
-
-func (d decoder) Uint64(v []byte) (uint64, error) {
-	return strconv.ParseUint(string(v), 10, 64)
-}
-
-func (d decoder) Float64(v []byte) (float64, error) {
-	return strconv.ParseFloat(string(v), 64)
-}
 
 // OptsFunc represents an configuration function for Memcache.
 type OptsFunc func(*memcache.Client)
@@ -50,8 +32,8 @@ func WithTimeout(timeout time.Duration) OptsFunc {
 type Memcache struct {
 	client *memcache.Client
 
-	encoder func(v interface{}) ([]byte, error)
-	decoder cache.Decoder
+	enc func(v interface{}) ([]byte, error)
+	dec cache.Decoder
 }
 
 // New create a new Memcache instance.
@@ -63,14 +45,14 @@ func New(uri string, opts ...OptsFunc) *Memcache {
 	}
 
 	return &Memcache{
-		client:  c,
-		encoder: memcacheEncoder,
-		decoder: decoder{},
+		client: c,
+		enc:    memcacheEncoder,
+		dec:    decoder.StringDecoder{},
 	}
 }
 
 // Get gets the item for the given key.
-func (c Memcache) Get(key string) *cache.Item {
+func (c Memcache) Get(key string) cache.Item {
 	b := []byte(nil)
 	v, err := c.client.Get(key)
 	switch err {
@@ -80,21 +62,17 @@ func (c Memcache) Get(key string) *cache.Item {
 		b = v.Value
 	}
 
-	return &cache.Item{
-		Decoder: c.decoder,
-		Value:   b,
-		Err:     err,
-	}
+	return cache.NewItem(c.dec, b, err)
 }
 
 // GetMulti gets the items for the given keys.
-func (c Memcache) GetMulti(keys ...string) ([]*cache.Item, error) {
+func (c Memcache) GetMulti(keys ...string) ([]cache.Item, error) {
 	val, err := c.client.GetMulti(keys)
 	if err != nil {
 		return nil, err
 	}
 
-	i := []*cache.Item{}
+	i := []cache.Item{}
 	for _, k := range keys {
 		var err = cache.ErrCacheMiss
 		var b []byte
@@ -103,11 +81,7 @@ func (c Memcache) GetMulti(keys ...string) ([]*cache.Item, error) {
 			err = nil
 		}
 
-		i = append(i, &cache.Item{
-			Decoder: c.decoder,
-			Value:   b,
-			Err:     err,
-		})
+		i = append(i, cache.NewItem(c.dec, b, err))
 	}
 
 	return i, nil
@@ -115,7 +89,7 @@ func (c Memcache) GetMulti(keys ...string) ([]*cache.Item, error) {
 
 // Set sets the item in the cache.
 func (c Memcache) Set(key string, value interface{}, expire time.Duration) error {
-	v, err := c.encoder(value)
+	v, err := c.enc(value)
 	if err != nil {
 		return err
 	}
@@ -129,7 +103,7 @@ func (c Memcache) Set(key string, value interface{}, expire time.Duration) error
 
 // Add sets the item in the cache, but only if the key does not already exist.
 func (c Memcache) Add(key string, value interface{}, expire time.Duration) error {
-	v, err := c.encoder(value)
+	v, err := c.enc(value)
 	if err != nil {
 		return err
 	}
@@ -147,7 +121,7 @@ func (c Memcache) Add(key string, value interface{}, expire time.Duration) error
 
 // Replace sets the item in the cache, but only if the key already exists.
 func (c Memcache) Replace(key string, value interface{}, expire time.Duration) error {
-	v, err := c.encoder(value)
+	v, err := c.enc(value)
 	if err != nil {
 		return err
 	}
