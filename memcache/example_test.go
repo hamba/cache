@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleNew() {
-	c := memcache.New("localhost:11211", memcache.WithIdleConns(10), memcache.WithTimeout(10 * time.Millisecond))
+	c := memcache.New("localhost:11211", memcache.WithIdleConns(10), memcache.WithTimeout(10*time.Millisecond))
 
 	i := c.Get("foobar")
 	if i.Err != nil {

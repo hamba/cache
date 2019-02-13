@@ -1,4 +1,4 @@
-// Package redis implements a memcache adapter for github.com/hamba/pkg/cache.
+// Package memcache implements a memcache adapter for github.com/hamba/pkg/cache.
 package memcache
 
 import (
