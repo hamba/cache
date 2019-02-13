@@ -1,4 +1,4 @@
-![Logo](http://svg.wiersma.co.za/github/project?lang=go&title=cache&tag=Go%20cache%20adapters)
+![Logo](http://svg.wiersma.co.za/hamba/project?title=cache&tag=Go%20cache%20adapters)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/hamba/cache)](https://goreportcard.com/report/github.com/hamba/cache)
 [![Build Status](https://travis-ci.com/hamba/cache.svg?branch=master)](https://travis-ci.com/hamba/cache)
