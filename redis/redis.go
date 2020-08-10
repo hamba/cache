@@ -4,7 +4,7 @@ package redis
 import (
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 	"github.com/hamba/cache/internal/decoder"
 	"github.com/hamba/pkg/cache"
 )
