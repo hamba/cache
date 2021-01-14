@@ -17,5 +17,5 @@ func ExampleNew() {
 		// Handle error
 	}
 
-	i.Float64()
+	_, _ = i.Float64()
 }

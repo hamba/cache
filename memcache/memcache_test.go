@@ -20,8 +20,8 @@ func init() {
 		skipMemcache = true
 		return
 	}
-	c.Write([]byte("flush_all\r\n"))
-	c.Close()
+	_, _ = c.Write([]byte("flush_all\r\n"))
+	_ = c.Close()
 }
 
 func TestMemcacheCache(t *testing.T) {

@@ -20,9 +20,9 @@ func init() {
 		skipRedis = true
 		return
 	}
-	c.Write([]byte("SELECT 1\r\n"))
-	c.Write([]byte("FLUSHDB\r\n"))
-	c.Close()
+	_, _ = c.Write([]byte("SELECT 1\r\n"))
+	_, _ = c.Write([]byte("FLUSHDB\r\n"))
+	_ = c.Close()
 }
 
 func TestRedisCache(t *testing.T) {
