@@ -156,9 +156,9 @@ func (c Memcache) Dec(key string, value uint64) (int64, error) {
 }
 
 func memcacheEncoder(v interface{}) ([]byte, error) {
-	switch v.(type) {
+	switch val := v.(type) {
 	case bool:
-		if v.(bool) {
+		if val {
 			return []byte("1"), nil
 		}
 		return []byte("0"), nil
@@ -169,7 +169,7 @@ func memcacheEncoder(v interface{}) ([]byte, error) {
 	case float32, float64:
 		return []byte(fmt.Sprintf("%f", v)), nil
 	case string:
-		return []byte(v.(string)), nil
+		return []byte(val), nil
 	}
 
 	return json.Marshal(v)
