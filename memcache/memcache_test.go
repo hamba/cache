@@ -22,7 +22,6 @@ func init() {
 		skipMemcache = true
 		return
 	}
-	//_, _ = c.Write([]byte("flush_all\r\n"))
 	_ = c.Close()
 }
 
