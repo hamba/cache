@@ -74,7 +74,7 @@ func (c Memcache) GetMulti(_ context.Context, keys ...string) ([]cache.Item, err
 		return nil, err
 	}
 
-	var i []cache.Item
+	i := make([]cache.Item, 0, len(keys))
 	for _, k := range keys {
 		valErr := cache.ErrCacheMiss
 		var b []byte
