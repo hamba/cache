@@ -4,6 +4,7 @@ package memcache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -56,10 +57,10 @@ func New(uri string, opts ...OptsFunc) *Memcache {
 func (c Memcache) Get(_ context.Context, key string) cache.Item {
 	b := []byte(nil)
 	v, err := c.client.Get(key)
-	switch err {
-	case memcache.ErrCacheMiss:
+	switch {
+	case errors.Is(err, memcache.ErrCacheMiss):
 		err = cache.ErrCacheMiss
-	case nil:
+	case err == nil:
 		b = v.Value
 	}
 
@@ -73,16 +74,16 @@ func (c Memcache) GetMulti(_ context.Context, keys ...string) ([]cache.Item, err
 		return nil, err
 	}
 
-	i := []cache.Item{}
+	var i []cache.Item
 	for _, k := range keys {
-		var err = cache.ErrCacheMiss
+		valErr := cache.ErrCacheMiss
 		var b []byte
 		if v, ok := val[k]; ok {
 			b = v.Value
-			err = nil
+			valErr = nil
 		}
 
-		i = append(i, cache.NewItem(c.dec, b, err))
+		i = append(i, cache.NewItem(c.dec, b, valErr))
 	}
 
 	return i, nil
@@ -114,7 +115,7 @@ func (c Memcache) Add(_ context.Context, key string, value interface{}, expire t
 		Value:      v,
 		Expiration: int32(expire.Seconds()),
 	})
-	if err == memcache.ErrNotStored {
+	if errors.Is(err, memcache.ErrNotStored) {
 		return cache.ErrNotStored
 	}
 	return err
@@ -133,7 +134,7 @@ func (c Memcache) Replace(_ context.Context, key string, value interface{}, expi
 		Expiration: int32(expire.Seconds()),
 	})
 
-	if err == memcache.ErrNotStored {
+	if errors.Is(err, memcache.ErrNotStored) {
 		return cache.ErrNotStored
 	}
 	return err

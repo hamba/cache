@@ -3,6 +3,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -69,7 +70,7 @@ func New(uri string, opts ...OptsFunc) (*Redis, error) {
 // Get gets the item for the given key.
 func (c Redis) Get(ctx context.Context, key string) cache.Item {
 	b, err := c.conn.Get(ctx, key).Bytes()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		err = cache.ErrCacheMiss
 	}
 
@@ -85,14 +86,14 @@ func (c Redis) GetMulti(ctx context.Context, keys ...string) ([]cache.Item, erro
 
 	i := []cache.Item{}
 	for _, v := range val {
-		var err = cache.ErrCacheMiss
+		valErr := cache.ErrCacheMiss
 		var b []byte
 		if v != nil {
 			b = []byte(v.(string))
-			err = nil
+			valErr = nil
 		}
 
-		i = append(i, cache.NewItem(c.dec, b, err))
+		i = append(i, cache.NewItem(c.dec, b, valErr))
 	}
 
 	return i, nil

@@ -1,3 +1,4 @@
+// Package decoder implements cache decoders.
 package decoder
 
 import (
