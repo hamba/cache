@@ -5,8 +5,8 @@ import (
 	"net"
 	"testing"
 
-	"github.com/hamba/cache"
-	"github.com/hamba/cache/memcache"
+	"github.com/hamba/cache/v2"
+	"github.com/hamba/cache/v2/memcache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

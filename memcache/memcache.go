@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/hamba/cache"
-	"github.com/hamba/cache/internal/decoder"
+	"github.com/hamba/cache/v2"
+	"github.com/hamba/cache/v2/internal/decoder"
 )
 
 // OptsFunc represents an configuration function for Memcache.

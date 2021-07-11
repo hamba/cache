@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hamba/cache/redis"
+	"github.com/hamba/cache/v2/redis"
 )
 
 func ExampleNew() {

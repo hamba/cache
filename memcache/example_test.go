@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hamba/cache/memcache"
+	"github.com/hamba/cache/v2/memcache"
 )
 
 func ExampleNew() {
