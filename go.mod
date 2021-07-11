@@ -1,4 +1,4 @@
-module github.com/hamba/cache
+module github.com/hamba/cache/v2
 
 go 1.11
 

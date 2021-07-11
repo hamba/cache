@@ -3,7 +3,7 @@ package decoder_test
 import (
 	"testing"
 
-	"github.com/hamba/cache/internal/decoder"
+	"github.com/hamba/cache/v2/internal/decoder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
