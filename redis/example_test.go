@@ -1,6 +1,7 @@
 package redis_test
 
 import (
+	"context"
 	"time"
 
 	"github.com/hamba/cache/redis"
@@ -12,7 +13,7 @@ func ExampleNew() {
 		// Handle error
 	}
 
-	i := c.Get("foobar")
+	i := c.Get(context.Background(), "foobar")
 	if i.Err != nil {
 		// Handle error
 	}

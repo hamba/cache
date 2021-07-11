@@ -1,12 +1,14 @@
 package memcache
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWithIdleConns(t *testing.T) {
@@ -38,30 +40,66 @@ func TestEncoderError(t *testing.T) {
 		},
 	}
 
-	assert.EqualError(t, c.Add("test", 1, 0), "test error")
-	assert.EqualError(t, c.Set("test", 1, 0), "test error")
-	assert.EqualError(t, c.Replace("test", 1, 0), "test error")
+	assert.EqualError(t, c.Add(context.Background(), "test", 1, 0), "test error")
+	assert.EqualError(t, c.Set(context.Background(), "test", 1, 0), "test error")
+	assert.EqualError(t, c.Replace(context.Background(), "test", 1, 0), "test error")
 }
 
 func TestByteEncode(t *testing.T) {
 	tests := []struct {
-		v      interface{}
-		expect []byte
+		name string
+		v    interface{}
+		want []byte
 	}{
-		{true, []byte("1")},
-		{false, []byte("0")},
-		{int64(10), []byte("10")},
-		{uint64(10), []byte("10")},
-		{float64(10.34), []byte("10.340000")},
-		{"foobar", []byte("foobar")},
-		{struct{ A int }{1}, []byte(`{"A":1}`)},
-		{[]string{"foo", "bar"}, []byte(`["foo","bar"]`)},
+		{
+			name: "bool true",
+			v:    true,
+			want: []byte("1"),
+		},
+		{
+			name: "bool false",
+			v:    false,
+			want: []byte("0"),
+		},
+		{
+			name: "int64",
+			v:    int64(10),
+			want: []byte("10"),
+		},
+		{
+			name: "uint64",
+			v:    uint64(10),
+			want: []byte("10"),
+		},
+		{
+			name: "float64",
+			v:    float64(10.34),
+			want: []byte("10.340000"),
+		},
+		{
+			name: "string",
+			v:    "foobar",
+			want: []byte("foobar"),
+		},
+		{
+			name: "struct",
+			v:    struct{ A int }{1},
+			want: []byte(`{"A":1}`),
+		},
+		{
+			name: "string slice",
+			v:    []string{"foo", "bar"},
+			want: []byte(`["foo","bar"]`),
+		},
 	}
 
-	for _, tt := range tests {
-		got, err := memcacheEncoder(tt.v)
-		assert.NoError(t, err)
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			got, err := memcacheEncoder(test.v)
 
-		assert.Equal(t, tt.expect, got)
+			require.NoError(t, err)
+			assert.Equal(t, test.want, got)
+		})
 	}
 }
