@@ -2,13 +2,14 @@
 package memcache
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/hamba/cache"
 	"github.com/hamba/cache/internal/decoder"
-	"github.com/hamba/pkg/cache"
 )
 
 // OptsFunc represents an configuration function for Memcache.
@@ -52,7 +53,7 @@ func New(uri string, opts ...OptsFunc) *Memcache {
 }
 
 // Get gets the item for the given key.
-func (c Memcache) Get(key string) cache.Item {
+func (c Memcache) Get(_ context.Context, key string) cache.Item {
 	b := []byte(nil)
 	v, err := c.client.Get(key)
 	switch err {
@@ -66,7 +67,7 @@ func (c Memcache) Get(key string) cache.Item {
 }
 
 // GetMulti gets the items for the given keys.
-func (c Memcache) GetMulti(keys ...string) ([]cache.Item, error) {
+func (c Memcache) GetMulti(_ context.Context, keys ...string) ([]cache.Item, error) {
 	val, err := c.client.GetMulti(keys)
 	if err != nil {
 		return nil, err
@@ -88,7 +89,7 @@ func (c Memcache) GetMulti(keys ...string) ([]cache.Item, error) {
 }
 
 // Set sets the item in the cache.
-func (c Memcache) Set(key string, value interface{}, expire time.Duration) error {
+func (c Memcache) Set(_ context.Context, key string, value interface{}, expire time.Duration) error {
 	v, err := c.enc(value)
 	if err != nil {
 		return err
@@ -102,7 +103,7 @@ func (c Memcache) Set(key string, value interface{}, expire time.Duration) error
 }
 
 // Add sets the item in the cache, but only if the key does not already exist.
-func (c Memcache) Add(key string, value interface{}, expire time.Duration) error {
+func (c Memcache) Add(_ context.Context, key string, value interface{}, expire time.Duration) error {
 	v, err := c.enc(value)
 	if err != nil {
 		return err
@@ -120,7 +121,7 @@ func (c Memcache) Add(key string, value interface{}, expire time.Duration) error
 }
 
 // Replace sets the item in the cache, but only if the key already exists.
-func (c Memcache) Replace(key string, value interface{}, expire time.Duration) error {
+func (c Memcache) Replace(_ context.Context, key string, value interface{}, expire time.Duration) error {
 	v, err := c.enc(value)
 	if err != nil {
 		return err
@@ -139,18 +140,18 @@ func (c Memcache) Replace(key string, value interface{}, expire time.Duration) e
 }
 
 // Delete deletes the item with the given key.
-func (c Memcache) Delete(key string) error {
+func (c Memcache) Delete(_ context.Context, key string) error {
 	return c.client.Delete(key)
 }
 
 // Inc increments a key by the value.
-func (c Memcache) Inc(key string, value uint64) (int64, error) {
+func (c Memcache) Inc(_ context.Context, key string, value uint64) (int64, error) {
 	v, err := c.client.Increment(key, value)
 	return int64(v), err
 }
 
 // Dec decrements a key by the value.
-func (c Memcache) Dec(key string, value uint64) (int64, error) {
+func (c Memcache) Dec(_ context.Context, key string, value uint64) (int64, error) {
 	v, err := c.client.Decrement(key, value)
 	return int64(v), err
 }

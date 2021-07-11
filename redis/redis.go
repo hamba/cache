@@ -2,11 +2,12 @@
 package redis
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
+	"github.com/hamba/cache"
 	"github.com/hamba/cache/internal/decoder"
-	"github.com/hamba/pkg/cache"
 )
 
 // OptsFunc represents an configuration function for Redis.
@@ -66,8 +67,8 @@ func New(uri string, opts ...OptsFunc) (*Redis, error) {
 }
 
 // Get gets the item for the given key.
-func (c Redis) Get(key string) cache.Item {
-	b, err := c.conn.Get(key).Bytes()
+func (c Redis) Get(ctx context.Context, key string) cache.Item {
+	b, err := c.conn.Get(ctx, key).Bytes()
 	if err == redis.Nil {
 		err = cache.ErrCacheMiss
 	}
@@ -76,8 +77,8 @@ func (c Redis) Get(key string) cache.Item {
 }
 
 // GetMulti gets the items for the given keys.
-func (c Redis) GetMulti(keys ...string) ([]cache.Item, error) {
-	val, err := c.conn.MGet(keys...).Result()
+func (c Redis) GetMulti(ctx context.Context, keys ...string) ([]cache.Item, error) {
+	val, err := c.conn.MGet(ctx, keys...).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -98,37 +99,37 @@ func (c Redis) GetMulti(keys ...string) ([]cache.Item, error) {
 }
 
 // Set sets the item in the cache.
-func (c Redis) Set(key string, value interface{}, expire time.Duration) error {
-	return c.conn.Set(key, value, expire).Err()
+func (c Redis) Set(ctx context.Context, key string, value interface{}, expire time.Duration) error {
+	return c.conn.Set(ctx, key, value, expire).Err()
 }
 
 // Add sets the item in the cache, but only if the key does not already exist.
-func (c Redis) Add(key string, value interface{}, expire time.Duration) error {
-	if !c.conn.SetNX(key, value, expire).Val() {
+func (c Redis) Add(ctx context.Context, key string, value interface{}, expire time.Duration) error {
+	if !c.conn.SetNX(ctx, key, value, expire).Val() {
 		return cache.ErrNotStored
 	}
 	return nil
 }
 
 // Replace sets the item in the cache, but only if the key already exists.
-func (c Redis) Replace(key string, value interface{}, expire time.Duration) error {
-	if !c.conn.SetXX(key, value, expire).Val() {
+func (c Redis) Replace(ctx context.Context, key string, value interface{}, expire time.Duration) error {
+	if !c.conn.SetXX(ctx, key, value, expire).Val() {
 		return cache.ErrNotStored
 	}
 	return nil
 }
 
 // Delete deletes the item with the given key.
-func (c Redis) Delete(key string) error {
-	return c.conn.Del(key).Err()
+func (c Redis) Delete(ctx context.Context, key string) error {
+	return c.conn.Del(ctx, key).Err()
 }
 
 // Inc increments a key by the value.
-func (c Redis) Inc(key string, value uint64) (int64, error) {
-	return c.conn.IncrBy(key, int64(value)).Result()
+func (c Redis) Inc(ctx context.Context, key string, value uint64) (int64, error) {
+	return c.conn.IncrBy(ctx, key, int64(value)).Result()
 }
 
 // Dec decrements a key by the value.
-func (c Redis) Dec(key string, value uint64) (int64, error) {
-	return c.conn.DecrBy(key, int64(value)).Result()
+func (c Redis) Dec(ctx context.Context, key string, value uint64) (int64, error) {
+	return c.conn.DecrBy(ctx, key, int64(value)).Result()
 }

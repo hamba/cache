@@ -1,4 +1,4 @@
 /*
-Package cache is a collection of cache clients.
+Package cache is an abstraction for cache clients.
 */
 package cache

@@ -1,10 +1,11 @@
 package decoder_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/hamba/cache/internal/decoder"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStringDecoder_Bool(t *testing.T) {
@@ -12,35 +13,31 @@ func TestStringDecoder_Bool(t *testing.T) {
 		name    string
 		in      interface{}
 		want    bool
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte("1"),
 			want:    true,
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    false,
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.Bool(tt.in)
+			got, err := dec.Bool(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -50,35 +47,31 @@ func TestStringDecoder_Bytes(t *testing.T) {
 		name    string
 		in      interface{}
 		want    []byte
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte{0x01},
 			want:    []byte{0x01},
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    nil,
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.Bytes(tt.in)
+			got, err := dec.Bytes(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -88,35 +81,31 @@ func TestStringDecoder_Int64(t *testing.T) {
 		name    string
 		in      interface{}
 		want    int64
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte("1"),
 			want:    1,
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    0,
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.Int64(tt.in)
+			got, err := dec.Int64(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -126,35 +115,31 @@ func TestStringDecoder_Uint64(t *testing.T) {
 		name    string
 		in      interface{}
 		want    uint64
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte("1"),
 			want:    1,
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    0,
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.Uint64(tt.in)
+			got, err := dec.Uint64(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -164,35 +149,31 @@ func TestStringDecoder_Float64(t *testing.T) {
 		name    string
 		in      interface{}
 		want    float64
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte("2.3"),
 			want:    2.3,
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    0,
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.Float64(tt.in)
+			got, err := dec.Float64(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -202,35 +183,31 @@ func TestStringDecoder_String(t *testing.T) {
 		name    string
 		in      interface{}
 		want    string
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name:    "Valid",
+			name:    "valid",
 			in:      []byte("foobar"),
 			want:    "foobar",
-			wantErr: false,
+			wantErr: require.NoError,
 		},
 		{
-			name:    "Invalid Type",
+			name:    "invalid type",
 			in:      struct{}{},
 			want:    "",
-			wantErr: true,
+			wantErr: require.Error,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
 			dec := decoder.StringDecoder{}
 
-			got, err := dec.String(tt.in)
+			got, err := dec.String(test.in)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			test.wantErr(t, err)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
