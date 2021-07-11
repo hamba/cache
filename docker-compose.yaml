@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
+  memcached:
+    image: memcached:1-alpine
+    ports:
+      - 11211:11211

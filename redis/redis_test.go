@@ -47,18 +47,21 @@ func TestRedisCache(t *testing.T) {
 	str, err := c.Get(ctx, "test").String()
 	require.NoError(t, err)
 	assert.Equal(t, "foobar", str)
+
 	_, err = c.Get(ctx, "_").String()
 	assert.EqualError(t, err, cache.ErrCacheMiss.Error())
 
 	// Add
 	err = c.Add(ctx, "test1", "foobar", 0)
 	require.NoError(t, err)
+
 	err = c.Add(ctx, "test1", "foobar", 0)
 	assert.EqualError(t, err, cache.ErrNotStored.Error())
 
 	// Replace
 	err = c.Replace(ctx, "test1", "foobar", 0)
 	require.NoError(t, err)
+
 	err = c.Replace(ctx, "_", "foobar", 0)
 	assert.EqualError(t, err, cache.ErrNotStored.Error())
 
@@ -71,12 +74,14 @@ func TestRedisCache(t *testing.T) {
 	// Delete
 	err = c.Delete(ctx, "test1")
 	require.NoError(t, err)
+
 	_, err = c.Get(ctx, "test1").String()
 	assert.Error(t, err)
 
 	// Inc
 	err = c.Set(ctx, "test2", 1, 0)
 	require.NoError(t, err)
+
 	i, err := c.Inc(ctx, "test2", 1)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), i)
@@ -84,6 +89,7 @@ func TestRedisCache(t *testing.T) {
 	// Dec
 	err = c.Set(ctx, "test2", 1, 0)
 	require.NoError(t, err)
+
 	i, err = c.Dec(ctx, "test2", 1)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(0), i)
